@@ -1,0 +1,5 @@
+vhdtdtfi -lib work I2C_Master.vhd -prj Magnetometr -o I2C_Master.spl -module I2C_Master -template /opt/Xilinx/14.7/ISE_DS/ISE//data/splfile.tft -deleteonerror 
+spl2sym -intstyle ise -family spartan3e I2C_Master.spl /home/szymon/Pulpit/UCISW2_P/Magnetometr/I2C_Master.sym 
+vhdtdtfi -prj Magnetometr -o /home/szymon/Pulpit/UCISW2_P/Magnetometr/I2C_Master.vhi -module I2C_Master -template /opt/Xilinx/14.7/ISE_DS/ISE//data/vhdlinst.tft -deleteonerror -lib work I2C_Master.vhd 
+vhdtdtfi -lib work I2C_Master.vhd -prj Magnetometr -o I2C_Master.spl -module I2C_Master -template /opt/Xilinx/14.7/ISE_DS/ISE//data/splfile.tft -deleteonerror 
+spl2sym -intstyle ise -family spartan3e I2C_Master.spl /home/szymon/Pulpit/UCISW2_P/Magnetometr/I2C_Master.sym 
