@@ -20,7 +20,7 @@ end HMC5883L_read;
 
 architecture Behavioral of HMC5883L_read is
 
-   type TState is ( SInit, SPushAddress, SWrite, SWriteWait, SRead, SReadWait, SPop, SCheckEmpty, SFinish );
+   type TState is ( SInit, SPushAddress, SWrite, SWriteWait, SRead, SReadWait, SFinish );
    signal state, nextState: TState;
 
 begin
@@ -38,8 +38,10 @@ begin
 
     process(state, I2C_Busy)
     begin
-        case state is
-            when SInit =>
+			nextState <= state;
+
+			case state is
+				when SInit =>
                 nextState <= SPushAddress;
             when SPushAddress =>
                 nextState <= SWrite;
@@ -53,30 +55,28 @@ begin
                 nextState <= SReadWait;
             when SReadWait =>
                 if I2C_Busy = '0' then 
-                    nextState <= SPop;
+                    nextState <= SFinish;
                 end if;
-				when SPop => 
-					nextState <= SCheckEmpty;
-				when SCheckEmpty =>
-					if I2C_FIFO_EMPTY = '0' then
-						nextState <= SPop;
-					else
-						nextState <= SFinish;
-					end if;
+--				when SPop => 
+--					nextState <= SCheckEmpty;
+--				when SCheckEmpty =>
+--					if I2C_FIFO_EMPTY = '0' then
+--						nextState <= SPop;
+--					else
+--						nextState <= SFinish;
+--					end if;
             when SFinish =>
                 nextState	<= SFinish;
-            when others => 
-                nextState <= state;
         end case;
     end process;
         
-    I2C_FIFO_DI <= X"0A"; -- when state = SPushAddress else X"00";
+    I2C_FIFO_DI <= X"0A";
     I2C_FIFO_Push <= '1' when state = SPushAddress else '0';
     I2C_Go <= '1' when state = SWrite or state = SRead else '0';
     I2C_Address <= X"3C" when state = SWrite else
                    X"3D" when state = SRead else
                    X"00";
-    I2C_ReadCnt <= X"1"; -- when state = SRead else X"0";
-	 I2C_FIFO_POP <= '1' when state = SPop else '0';
+    I2C_ReadCnt <= X"1";
+	 --I2C_FIFO_POP <= '1' when state = SPop else '0';
 
 end Behavioral;
