@@ -26,7 +26,7 @@ ARCHITECTURE behavioral OF Magnetometr_Magnetometr_sch_tb IS
    SIGNAL FIFO_Full	:	STD_LOGIC;
    SIGNAL NACK	:	STD_LOGIC;
 	
-	constant CLK_period : time := 100 ns;
+	constant CLK_period : time := 20 ns;
 
 BEGIN
 
@@ -44,7 +44,7 @@ BEGIN
    process
       variable bAddr  : std_logic_vector( 7 downto 0 );             -- I2C adress received as the first byte
       variable bWrite : std_logic_vector( 7 downto 0 );             -- byte received in write transfers
-      variable bRead  : std_logic_vector( 7 downto 0 ) := X"00";    -- byte transmitted in read transfers
+      variable bRead  : std_logic_vector( 7 downto 0 ) := X"0A";    -- byte transmitted in read transfers
       variable Ack : std_logic;
       variable L: line;	-- simulation messages (textio)
    begin
