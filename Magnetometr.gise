@@ -24,88 +24,8 @@
   <files xmlns="http://www.xilinx.com/XMLSchema">
     <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="HMC5883L_read.sym" xil_pn:origination="imported"/>
     <file xil_pn:fileType="FILE_NCD" xil_pn:name="HMC5883L_read_guide.ncd" xil_pn:origination="imported"/>
-    <file xil_pn:branch="BehavioralSim" xil_pn:fileType="FILE_VHDL" xil_pn:name="Magnetometr.vhf"/>
-    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="Magnetometr_Magnetometr_sch_tb_beh.prj"/>
-    <file xil_pn:branch="BehavioralSim" xil_pn:fileType="FILE_ISIM_EXE" xil_pn:name="Magnetometr_Magnetometr_sch_tb_isim_beh.exe"/>
-    <file xil_pn:fileType="FILE_ISIM_MISC" xil_pn:name="Magnetometr_Magnetometr_sch_tb_isim_beh.wdb"/>
-    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="Magnetometr_Magnetometr_sch_tb_stx_beh.prj"/>
-    <file xil_pn:branch="BehavioralSim" xil_pn:fileType="FILE_ISIM_EXE" xil_pn:name="Magnetometr_isim_beh.exe"/>
-    <file xil_pn:fileType="FILE_LOG" xil_pn:name="fuse.log"/>
-    <file xil_pn:fileType="FILE_DIRECTORY" xil_pn:name="isim"/>
-    <file xil_pn:branch="BehavioralSim" xil_pn:fileType="FILE_CMD" xil_pn:name="isim.cmd"/>
-    <file xil_pn:branch="BehavioralSim" xil_pn:fileType="FILE_LOG" xil_pn:name="isim.log"/>
-    <file xil_pn:branch="BehavioralSim" xil_pn:fileType="FILE_INI" xil_pn:name="xilinxsim.ini"/>
   </files>
 
-  <transforms xmlns="http://www.xilinx.com/XMLSchema">
-    <transform xil_pn:end_ts="1585839386" xil_pn:name="TRAN_copyInitialToAbstractSimulation" xil_pn:start_ts="1585839386">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-    </transform>
-    <transform xil_pn:end_ts="1585915949" xil_pn:in_ck="-4452142082843201496" xil_pn:name="TRAN_copyAbstractToPostAbstractSimulation" xil_pn:start_ts="1585915949">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-      <status xil_pn:value="OutOfDateForInputs"/>
-      <status xil_pn:value="OutOfDateForOutputs"/>
-      <status xil_pn:value="InputChanged"/>
-      <status xil_pn:value="OutputChanged"/>
-      <outfile xil_pn:name="HMC5883L_read.vhd"/>
-      <outfile xil_pn:name="I2C_Master.vhd"/>
-      <outfile xil_pn:name="Magnetometr_TB.vhd"/>
-    </transform>
-    <transform xil_pn:end_ts="1585839418" xil_pn:name="TRAN_xawsToSimhdl" xil_pn:prop_ck="-8989726295246603846" xil_pn:start_ts="1585839418">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-    </transform>
-    <transform xil_pn:end_ts="1585839420" xil_pn:in_ck="-4823724329571897649" xil_pn:name="TRAN_schematicsToHdlSim" xil_pn:prop_ck="6401829187533156924" xil_pn:start_ts="1585839418">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-      <outfile xil_pn:name="Magnetometr.vhf"/>
-    </transform>
-    <transform xil_pn:end_ts="1585839388" xil_pn:name="TRAN_regenerateCoresSim" xil_pn:prop_ck="4349009146199447641" xil_pn:start_ts="1585839388">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-    </transform>
-    <transform xil_pn:end_ts="1585915949" xil_pn:in_ck="-4144569932761877603" xil_pn:name="TRAN_copyPostAbstractToPreSimulation" xil_pn:start_ts="1585915949">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-      <status xil_pn:value="OutOfDateForInputs"/>
-      <status xil_pn:value="OutOfDateForPredecessor"/>
-      <status xil_pn:value="OutOfDateForOutputs"/>
-      <status xil_pn:value="InputChanged"/>
-      <status xil_pn:value="OutputChanged"/>
-      <outfile xil_pn:name="HMC5883L_read.vhd"/>
-      <outfile xil_pn:name="I2C_Master.vhd"/>
-      <outfile xil_pn:name="Magnetometr.vhf"/>
-      <outfile xil_pn:name="Magnetometr_TB.vhd"/>
-    </transform>
-    <transform xil_pn:end_ts="1585915952" xil_pn:in_ck="-4144569932761877603" xil_pn:name="TRAN_ISimulateBehavioralModelRunFuse" xil_pn:prop_ck="-7896707056948729367" xil_pn:start_ts="1585915949">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-      <status xil_pn:value="OutOfDateForInputs"/>
-      <status xil_pn:value="OutOfDateForProperties"/>
-      <status xil_pn:value="OutOfDateForPredecessor"/>
-      <status xil_pn:value="OutOfDateForOutputs"/>
-      <status xil_pn:value="InputChanged"/>
-      <status xil_pn:value="OutputChanged"/>
-      <outfile xil_pn:name="Magnetometr_Magnetometr_sch_tb_beh.prj"/>
-      <outfile xil_pn:name="Magnetometr_Magnetometr_sch_tb_isim_beh.exe"/>
-      <outfile xil_pn:name="fuse.log"/>
-      <outfile xil_pn:name="isim"/>
-      <outfile xil_pn:name="isim.log"/>
-      <outfile xil_pn:name="xilinxsim.ini"/>
-    </transform>
-    <transform xil_pn:end_ts="1585915952" xil_pn:in_ck="3791170809705515384" xil_pn:name="TRAN_ISimulateBehavioralModel" xil_pn:prop_ck="-6240470177038742026" xil_pn:start_ts="1585915952">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-      <status xil_pn:value="OutOfDateForProperties"/>
-      <status xil_pn:value="OutOfDateForPredecessor"/>
-      <status xil_pn:value="OutOfDateForOutputs"/>
-      <status xil_pn:value="OutputChanged"/>
-      <outfile xil_pn:name="Magnetometr_Magnetometr_sch_tb_isim_beh.wdb"/>
-      <outfile xil_pn:name="isim.cmd"/>
-      <outfile xil_pn:name="isim.log"/>
-    </transform>
-  </transforms>
+  <transforms xmlns="http://www.xilinx.com/XMLSchema"/>
 
 </generated_project>

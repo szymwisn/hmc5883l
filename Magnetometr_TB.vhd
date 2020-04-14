@@ -15,7 +15,6 @@ ARCHITECTURE behavioral OF Magnetometr_Magnetometr_sch_tb IS
           CLK	:	IN	STD_LOGIC; 
           SDA	:	INOUT	STD_LOGIC; 
           SCL	:	INOUT	STD_LOGIC; 
-          FIFO_Full	:	OUT	STD_LOGIC; 
           NACK	:	OUT	STD_LOGIC);
    END COMPONENT;
 
@@ -23,7 +22,6 @@ ARCHITECTURE behavioral OF Magnetometr_Magnetometr_sch_tb IS
    SIGNAL CLK	:	STD_LOGIC;
    SIGNAL SDA	:	STD_LOGIC;
    SIGNAL SCL	:	STD_LOGIC;
-   SIGNAL FIFO_Full	:	STD_LOGIC;
    SIGNAL NACK	:	STD_LOGIC;
 	
 	constant CLK_period : time := 20 ns;
@@ -35,7 +33,6 @@ BEGIN
 		CLK => CLK, 
 		SDA => SDA, 
 		SCL => SCL, 
-		FIFO_Full => FIFO_Full, 
 		NACK => NACK
    );
 	
