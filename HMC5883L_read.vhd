@@ -34,6 +34,9 @@ architecture Behavioral of HMC5883L_read is
 
 begin
 
+	-- 10Hz probkowanie
+	-- 6 pomariow, 10ms czekanie, 6 pomiarow
+
     process(CLK)
     begin
         if rising_edge(CLK) then
