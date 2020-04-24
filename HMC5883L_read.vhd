@@ -24,9 +24,12 @@ end HMC5883L_read;
 
 architecture Behavioral of HMC5883L_read is
 
-   type TState is ( SInit, SPushAddress, SWrite, SWriteWait, SRead, SReadWait,
-										SMeasureRead, SMeasureReadWait, SMeasureGetByte, SMeasurePopByte, SMeasureIsFIFOEmpty,
-										SFinish);
+   type TState is ( SInit,
+--	SPushAddress, SWrite, SWriteWait, SRead, SReadWait,
+							SPushAddressOfConfigRegA, SPushDataToConfigA, SWriteConfigRegA, SWaitConfigRegA,
+							SPushAddressOfModeReg, SPushContinousMeasurementMode, SWriteContinousMeasurementMode, SWaitContinousMeasurementMode,
+							SMeasureRead, SMeasureReadWait, SMeasureGetByte, SMeasurePopByte, SMeasureIsFIFOEmpty,
+							SFinish);
    signal state, nextState: TState;
 	
 	signal data : STD_LOGIC_VECTOR (47 downto 0);
@@ -54,27 +57,48 @@ begin
 
 			case state is
 				when SInit =>
-                nextState <= SMeasureRead;
-					 
---            when SPushAddress =>
---                nextState <= SMeasureRead;
---					 
---            when SWrite => 
---                nextState <= SWriteWait;
---					 
---            when SWriteWait =>
---                if I2C_Busy = '0' then 
---                    nextState <= SRead;
---                end if;
---					 
---            when SRead =>
---                nextState <= SReadWait;
---					 
---            when SReadWait =>
---                if I2C_Busy = '0' then 
---                    nextState <= SFinish;
---                end if;
-					 
+					nextState <= SPushAddressOfConfigRegA;
+					
+				-- DATA OUTPUT RATE CONFIGURATION:
+				-- push 00 to FIFO - address of Configuration Register A
+				when SPushAddressOfConfigRegA =>
+					nextState <= SPushDataToConfigA;
+						
+				-- push 00010100 to FIFO - data output rate 30 Hz						
+				when SPushDataToConfigA =>
+					nextState <= SWriteConfigRegA;
+					
+				-- write data to Configure Register A
+				when SWriteConfigRegA => 
+					nextState <= SWaitConfigRegA;
+					
+				when SWaitConfigRegA =>
+					if I2C_Busy = '0' then
+						nextState <= SPushAddressOfModeReg;
+					end if;
+					
+					
+				-- DATA OPERATING MODE CONFIGURATION:
+				-- push 02 to FIFO - address of mode register
+				when SPushAddressOfModeReg =>
+					nextState <= SPushContinousMeasurementMode;
+					
+				-- push 00 to FIFO - continous measurement mode
+				when SPushContinousMeasurementMode =>
+					nextState <= SWriteContinousMeasurementMode;
+					
+				-- write data to Mode Register
+				when SWriteContinousMeasurementMode =>
+					nextState <= SWaitContinousMeasurementMode;
+				
+				-- wait until FIFO not busy, then continue
+				when SWaitContinousMeasurementMode =>
+					if I2C_Busy = '0' then
+						nextState <= SMeasureRead;
+					end if;
+						
+						
+				-- READING MEASUREMENTS:
 				-- read data from magnetometer
 				when SMeasureRead =>
 					nextState <= SMeasureReadWait;
@@ -157,25 +181,26 @@ begin
 			end if;
 		end process;
         
-		I2C_FIFO_DI <= X"0A" when state = SRead else
-											X"00";
+		I2C_FIFO_DI <= X"00" when state = SPushAddressOfConfigRegA or state = SPushContinousMeasurementMode
+							else X"02" when state = SPushAddressOfModeReg
+							else "00010100" when state = SPushDataToConfigA -- tryb 30Hz: DO2=1, DO1=0 i DO0=1
+							else X"00";
 											
-		I2C_FIFO_Push <= '1' when state = SPushAddress else 
-													'0';
-		 
-		I2C_Go <= '1' when state = SWrite or state = SRead or state = SMeasureRead
+		I2C_FIFO_Push <= '1' when state = SPushAddressOfConfigRegA or state = SPushAddressOfModeReg
+									or state = SPushContinousMeasurementMode or state = SPushDataToConfigA
 									else '0';
 		 
-		I2C_Address <= X"3C" when state = SWrite else
-												X"3D" when state = SRead or state = SMeasureRead else
-												X"00";
+		I2C_Go <= '1' when state = SMeasureRead or state = SWriteConfigRegA or state = SWriteContinousMeasurementMode
+						else '0';
+		 
+		I2C_Address <= X"3C" when state = SMeasureRead or state = SWriteConfigRegA or state = SWriteContinousMeasurementMode
+							else X"00";
 												
-		I2C_ReadCnt <= X"1" when state = SRead else 
-												X"6" when state = SMeasureRead else
-												X"0";
+		I2C_ReadCnt <= X"6" when state = SMeasureRead 
+							else X"0";
 
-		I2C_FIFO_POP <= '1' when state = SMeasurePopByte else 
-												'0';
+		I2C_FIFO_POP <= '1' when state = SMeasurePopByte
+								else '0';
 		  
 		-- convert data to output
 		DRX <= data(43 downto 32);
