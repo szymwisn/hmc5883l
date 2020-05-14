@@ -25,11 +25,11 @@ end HMC5883L_read;
 architecture Behavioral of HMC5883L_read is
 
    type TState is ( SInit,
---	SPushAddress, SWrite, SWriteWait, SRead, SReadWait,
 							SPushAddressOfConfigRegA, SPushDataToConfigA, SWriteConfigRegA, SWaitConfigRegA,
-							SPushAddressOfModeReg, SPushContinousMeasurementMode, SWriteContinousMeasurementMode, SWaitContinousMeasurementMode,
+							SPushAddressOfModeReg, SPushContinousMeasurementMode, SWriteMode, SWaitMode,
+							SMeasureReceive, SMeasureReceiveWait,
 							SMeasureRead, SMeasureReadWait, SMeasureGetByte, SMeasurePopByte, SMeasureIsFIFOEmpty,
-							SFinish);
+							SPointToFirstDataRegister);
    signal state, nextState: TState;
 	
 	signal data : STD_LOGIC_VECTOR (47 downto 0);
@@ -64,7 +64,7 @@ begin
 				when SPushAddressOfConfigRegA =>
 					nextState <= SPushDataToConfigA;
 						
-				-- push 00010100 to FIFO - data output rate 30 Hz						
+				-- push 00010100 to FIFO - data output rate 30 Hz				
 				when SPushDataToConfigA =>
 					nextState <= SWriteConfigRegA;
 					
@@ -85,20 +85,31 @@ begin
 					
 				-- push 00 to FIFO - continous measurement mode
 				when SPushContinousMeasurementMode =>
-					nextState <= SWriteContinousMeasurementMode;
+					nextState <= SWriteMode;
 					
 				-- write data to Mode Register
-				when SWriteContinousMeasurementMode =>
-					nextState <= SWaitContinousMeasurementMode;
+				when SWriteMode =>
+					nextState <= SWaitMode;
 				
 				-- wait until FIFO not busy, then continue
-				when SWaitContinousMeasurementMode =>
+				when SWaitMode =>
+					if I2C_Busy = '0' then
+						nextState <= SMeasureReceive;
+					end if;
+					
+				-- // loop start // -- 
+				-- RECEIVING MEASUREMENTS:
+				-- send 0x3D 0x06 - read all 6 bytes
+				when SMeasureReceive =>
+					nextState <= SMeasureReceiveWait;
+				
+				when SMeasureReceiveWait => 
 					if I2C_Busy = '0' then
 						nextState <= SMeasureRead;
 					end if;
 						
 						
-				-- READING MEASUREMENTS:
+				-- READING RECEIVED DATA:
 				-- read data from magnetometer
 				when SMeasureRead =>
 					nextState <= SMeasureReadWait;
@@ -121,14 +132,14 @@ begin
 					if I2C_FIFO_Empty = '0' then
 						nextState <= SMeasureGetByte;
 					else
-						nextState <= SFinish;
+						nextState <= SPointToFirstDataRegister;
 					end if;
-								
-            when SFinish =>
-                nextState	<= SFinish;
-					 
-				when others =>
-					nextState <= SFinish;
+					
+				-- POINT TO Data Output X MSB Register 
+				-- send 0x3C 0x03 - point to first data register with address 03
+				when SPointToFirstDataRegister =>
+					nextState <= SMeasureReceive;
+													
         end case;
 		end process;
 		
@@ -142,6 +153,8 @@ begin
 				if state = SMeasurePopByte then
 						if currentByte < 5 then
 							currentByte <= currentByte + 1;
+						else
+							currentByte <= 0;
 						end if;
 				end if;
 			end if;
@@ -184,19 +197,21 @@ begin
 		I2C_FIFO_DI <= X"00" when state = SPushAddressOfConfigRegA or state = SPushContinousMeasurementMode
 							else X"02" when state = SPushAddressOfModeReg
 							else "00010100" when state = SPushDataToConfigA -- tryb 30Hz: DO2=1, DO1=0 i DO0=1
+							else X"03" when state = SPointToFirstDataRegister
 							else X"00";
 											
 		I2C_FIFO_Push <= '1' when state = SPushAddressOfConfigRegA or state = SPushAddressOfModeReg
 									or state = SPushContinousMeasurementMode or state = SPushDataToConfigA
 									else '0';
 		 
-		I2C_Go <= '1' when state = SMeasureRead or state = SWriteConfigRegA or state = SWriteContinousMeasurementMode
+		I2C_Go <= '1' when state = SMeasureRead or state = SWriteConfigRegA or state = SWriteMode or state = SMeasureReceive
 						else '0';
 		 
-		I2C_Address <= X"3C" when state = SMeasureRead or state = SWriteConfigRegA or state = SWriteContinousMeasurementMode
-							else X"00";
+		I2C_Address <= X"3C" when state = SMeasureRead or state = SWriteConfigRegA or state = SWriteMode
+							or state = SPointToFirstDataRegister 
+							else X"3D" when state = SMeasureReceive else X"00";
 												
-		I2C_ReadCnt <= X"6" when state = SMeasureRead 
+		I2C_ReadCnt <= X"6" when state = SMeasureRead  or state = SMeasureReceive
 							else X"0";
 
 		I2C_FIFO_POP <= '1' when state = SMeasurePopByte
