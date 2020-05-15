@@ -21,11 +21,17 @@
         <signal name="XLXN_68(7:0)" />
         <signal name="XLXN_69" />
         <signal name="XLXN_70(7:0)" />
+        <signal name="DRX(15:0)" />
+        <signal name="DRY(15:0)" />
+        <signal name="DRZ(15:0)" />
         <port polarity="BiDirectional" name="SDA" />
         <port polarity="BiDirectional" name="SCL" />
         <port polarity="Output" name="NACK" />
         <port polarity="Input" name="CLK" />
         <port polarity="Input" name="RST" />
+        <port polarity="Output" name="DRX(15:0)" />
+        <port polarity="Output" name="DRY(15:0)" />
+        <port polarity="Output" name="DRZ(15:0)" />
         <blockdef name="I2C_Master">
             <timestamp>2015-11-24T13:12:50</timestamp>
             <rect width="336" x="64" y="-512" height="572" />
@@ -50,7 +56,7 @@
             <line x2="464" y1="32" y2="32" x1="400" />
         </blockdef>
         <blockdef name="HMC5883L_read">
-            <timestamp>2020-4-14T14:43:4</timestamp>
+            <timestamp>2020-5-15T11:41:39</timestamp>
             <rect width="400" x="64" y="-576" height="576" />
             <line x2="0" y1="-544" y2="-544" x1="64" />
             <line x2="0" y1="-448" y2="-448" x1="64" />
@@ -105,9 +111,9 @@
             <blockpin signalname="XLXN_68(7:0)" name="I2C_Address(7:0)" />
             <blockpin signalname="XLXN_70(7:0)" name="I2C_FIFO_DI(7:0)" />
             <blockpin signalname="XLXN_67(3:0)" name="I2C_ReadCnt(3:0)" />
-            <blockpin name="DRX(11:0)" />
-            <blockpin name="DRY(11:0)" />
-            <blockpin name="DRZ(11:0)" />
+            <blockpin signalname="DRX(15:0)" name="DRX(15:0)" />
+            <blockpin signalname="DRY(15:0)" name="DRY(15:0)" />
+            <blockpin signalname="DRZ(15:0)" name="DRZ(15:0)" />
         </block>
     </netlist>
     <sheet sheetnum="1" width="3520" height="2720">
@@ -149,8 +155,6 @@
             <wire x2="2272" y1="1312" y2="1312" x1="1840" />
             <wire x2="1104" y1="720" y2="864" x1="1104" />
         </branch>
-        <instance x="1216" y="1408" name="XLXI_3" orien="R0">
-        </instance>
         <iomarker fontsize="28" x="976" y="864" name="RST" orien="R180" />
         <branch name="XLXN_62">
             <wire x2="1152" y1="752" y2="1056" x1="1152" />
@@ -204,5 +208,19 @@
             <wire x2="1904" y1="1120" y2="1216" x1="1904" />
             <wire x2="2272" y1="1216" y2="1216" x1="1904" />
         </branch>
+        <branch name="DRX(15:0)">
+            <wire x2="1776" y1="1248" y2="1248" x1="1744" />
+        </branch>
+        <iomarker fontsize="28" x="1776" y="1248" name="DRX(15:0)" orien="R0" />
+        <branch name="DRY(15:0)">
+            <wire x2="1776" y1="1312" y2="1312" x1="1744" />
+        </branch>
+        <iomarker fontsize="28" x="1776" y="1312" name="DRY(15:0)" orien="R0" />
+        <branch name="DRZ(15:0)">
+            <wire x2="1776" y1="1376" y2="1376" x1="1744" />
+        </branch>
+        <iomarker fontsize="28" x="1776" y="1376" name="DRZ(15:0)" orien="R0" />
+        <instance x="1216" y="1408" name="XLXI_3" orien="R0">
+        </instance>
     </sheet>
 </drawing>

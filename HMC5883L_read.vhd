@@ -15,9 +15,9 @@ entity HMC5883L_read is
 		   I2C_ReadCnt : out STD_LOGIC_VECTOR (3 downto 0);
 			I2C_FIFO_Empty: in STD_LOGIC;
 			I2C_FIFO_FULL: in STD_LOGIC;
-			DRX : out  STD_LOGIC_VECTOR (11 downto 0);
-         DRY : out  STD_LOGIC_VECTOR (11 downto 0);
-         DRZ : out  STD_LOGIC_VECTOR (11 downto 0)
+			DRX : out  STD_LOGIC_VECTOR (15 downto 0);
+         DRY : out  STD_LOGIC_VECTOR (15 downto 0);
+         DRZ : out  STD_LOGIC_VECTOR (15 downto 0)
     );
 			
 end HMC5883L_read;
@@ -28,8 +28,8 @@ architecture Behavioral of HMC5883L_read is
 							SPushAddressOfConfigRegA, SPushDataToConfigA, SWriteConfigRegA, SWaitConfigRegA,
 							SPushAddressOfModeReg, SPushContinousMeasurementMode, SWriteMode, SWaitMode,
 							SMeasureReceive, SMeasureReceiveWait,
-							SMeasureRead, SMeasureReadWait, SMeasureGetByte, SMeasurePopByte, SMeasureIsFIFOEmpty,
-							SPointToFirstDataRegister);
+							SMeasureGetByte, SMeasurePopByte, SMeasureIsFIFOEmpty,
+							SPointToFirstDataRegister, SWaitPointToFirstDataRegister);
    signal state, nextState: TState;
 	
 	signal data : STD_LOGIC_VECTOR (47 downto 0);
@@ -94,10 +94,21 @@ begin
 				-- wait until FIFO not busy, then continue
 				when SWaitMode =>
 					if I2C_Busy = '0' then
-						nextState <= SMeasureReceive;
+						nextState <= SPointToFirstDataRegister;
 					end if;
 					
 				-- // loop start // -- 
+				-- POINT TO Data Output X MSB Register 
+				-- send 0x3C 0x03 - point to first data register with address 03
+				when SPointToFirstDataRegister =>
+					nextState <= SWaitPointToFirstDataRegister;
+				
+				when SWaitPointToFirstDataRegister =>
+					if I2C_Busy = '0' then
+						nextState <= SMeasureReceive;
+					end if;
+				
+				
 				-- RECEIVING MEASUREMENTS:
 				-- send 0x3D 0x06 - read all 6 bytes
 				when SMeasureReceive =>
@@ -105,20 +116,11 @@ begin
 				
 				when SMeasureReceiveWait => 
 					if I2C_Busy = '0' then
-						nextState <= SMeasureRead;
-					end if;
-						
-						
-				-- READING RECEIVED DATA:
-				-- read data from magnetometer
-				when SMeasureRead =>
-					nextState <= SMeasureReadWait;
-					
-				when SMeasureReadWait =>
-					if I2C_Busy = '0' then
 						nextState <= SMeasureGetByte;
 					end if;
-					
+						
+						
+				-- READING RECEIVED DATA:			
 				-- get data from FIFO
 				when SMeasureGetByte =>
 					nextState <= SMeasurePopByte;
@@ -134,12 +136,7 @@ begin
 					else
 						nextState <= SPointToFirstDataRegister;
 					end if;
-					
-				-- POINT TO Data Output X MSB Register 
-				-- send 0x3C 0x03 - point to first data register with address 03
-				when SPointToFirstDataRegister =>
-					nextState <= SMeasureReceive;
-													
+																	
         end case;
 		end process;
 		
@@ -202,24 +199,25 @@ begin
 											
 		I2C_FIFO_Push <= '1' when state = SPushAddressOfConfigRegA or state = SPushAddressOfModeReg
 									or state = SPushContinousMeasurementMode or state = SPushDataToConfigA
+									or state = SPointToFirstDataRegister
 									else '0';
 		 
-		I2C_Go <= '1' when state = SMeasureRead or state = SWriteConfigRegA or state = SWriteMode or state = SMeasureReceive
-						else '0';
+		I2C_Go <= '1' when state = SWriteConfigRegA or state = SWriteMode or state = SMeasureReceive
+						or state = SPointToFirstDataRegister else '0';
 		 
-		I2C_Address <= X"3C" when state = SMeasureRead or state = SWriteConfigRegA or state = SWriteMode
+		I2C_Address <= X"3C" when state = SWriteConfigRegA or state = SWriteMode
 							or state = SPointToFirstDataRegister 
 							else X"3D" when state = SMeasureReceive else X"00";
 												
-		I2C_ReadCnt <= X"6" when state = SMeasureRead  or state = SMeasureReceive
+		I2C_ReadCnt <= X"6" when state = SMeasureReceive
 							else X"0";
 
 		I2C_FIFO_POP <= '1' when state = SMeasurePopByte
 								else '0';
 		  
 		-- convert data to output
-		DRX <= data(43 downto 32);
-		DRY <= data(27 downto 16);
-		DRZ <= data(11 downto 0);
+		DRX <= data(47 downto 32);
+		DRY <= data(31 downto 16);
+		DRZ <= data(15 downto 0);
 
 end Behavioral;

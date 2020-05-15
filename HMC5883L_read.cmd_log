@@ -22,3 +22,9 @@ vhdtdtfi -lib work HMC5883L_read.vhd -prj Magnetometr -o HMC5883L_read.spl -modu
 spl2sym -intstyle ise -family spartan3e HMC5883L_read.spl /home/szymon/Git/hmc5883l/HMC5883L_read.sym 
 vhdtdtfi -lib work HMC5883L_read.vhd -prj Magnetometr -o HMC5883L_read.spl -module HMC5883L_read -template /opt/Xilinx/14.7/ISE_DS/ISE//data/splfile.tft -deleteonerror 
 spl2sym -intstyle ise -family spartan3e HMC5883L_read.spl /home/szymon/Git/hmc5883l/HMC5883L_read.sym 
+vhdtdtfi -lib work HMC5883L_read.vhd -prj Magnetometr -o HMC5883L_read.spl -module HMC5883L_read -template /opt/Xilinx/14.7/ISE_DS/ISE//data/splfile.tft -deleteonerror 
+spl2sym -intstyle ise -family spartan3e HMC5883L_read.spl /home/szymwisn/git/hmc5883l/HMC5883L_read.sym 
+vhdtdtfi -lib work HMC5883L_read.vhd -prj Magnetometr -o HMC5883L_read.spl -module HMC5883L_read -template /opt/Xilinx/14.7/ISE_DS/ISE//data/splfile.tft -deleteonerror 
+spl2sym -intstyle ise -family spartan3e HMC5883L_read.spl /home/szymwisn/git/hmc5883l/HMC5883L_read.sym 
+vhdtdtfi -lib work HMC5883L_read.vhd -prj Magnetometr -o HMC5883L_read.spl -module HMC5883L_read -template /opt/Xilinx/14.7/ISE_DS/ISE//data/splfile.tft -deleteonerror 
+spl2sym -intstyle ise -family spartan3e HMC5883L_read.spl /home/szymwisn/git/hmc5883l/HMC5883L_read.sym 
