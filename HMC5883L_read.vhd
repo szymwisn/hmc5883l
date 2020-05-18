@@ -37,8 +37,8 @@ architecture Behavioral of HMC5883L_read is
 
 begin
 
-	-- 10Hz probkowanie
-	-- 6 pomariow, 10ms czekanie, 6 pomiarow
+	 -- czekanie po wykonaniu pomiaru przez 1/30 * 50 mln taktow
+	 -- najpierw starsze potem mlodsze
 
     process(CLK)
     begin
@@ -165,27 +165,27 @@ begin
 					case currentByte is
 						-- X MSB
 						when 0 =>
-							data(47 downto 40) <= I2C_FIFO_DO;
+							data(39 downto 32) <= I2C_FIFO_DO;
 							
 						-- X LSB
 						when 1 =>
-							data(39 downto 32) <= I2C_FIFO_DO;
+							data(47 downto 40) <= I2C_FIFO_DO;
 							
 						-- Y MSB
 						when 2 =>
-							data(31 downto 24) <= I2C_FIFO_DO;
+							data(23 downto 16) <= I2C_FIFO_DO;
 							
 						-- Y LSB
 						when 3 =>
-							data(23 downto 16) <= I2C_FIFO_DO;
+							data(31 downto 24) <= I2C_FIFO_DO;
 							
 						-- Z MSB
 						when 4 =>
-							data(15 downto 8) <= I2C_FIFO_DO;
+							data(7 downto 0) <= I2C_FIFO_DO;
 							
 						-- Z LSB
 						when 5 =>
-							data(7 downto 0) <= I2C_FIFO_DO;
+							data(15 downto 8) <= I2C_FIFO_DO;
 					end case;
 				end if;
 			end if;
