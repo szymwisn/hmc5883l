@@ -29,16 +29,15 @@ architecture Behavioral of HMC5883L_read is
 							SPushAddressOfModeReg, SPushContinousMeasurementMode, SWriteMode, SWaitMode,
 							SMeasureReceive, SMeasureReceiveWait,
 							SMeasureGetByte, SMeasurePopByte, SMeasureIsFIFOEmpty,
-							SPointToFirstDataRegister, SWaitPointToFirstDataRegister);
+							SPointToFirstDataRegister, SWaitPointToFirstDataRegister, SMeasureWait);
    signal state, nextState: TState;
 	
 	signal data : STD_LOGIC_VECTOR (47 downto 0);
 	signal currentByte : integer range 0 to 5 := 0;
+	signal counter : integer range 0 to 1666667 := 0;
+	signal shouldProceed : boolean := false;
 
 begin
-
-	 -- czekanie po wykonaniu pomiaru przez 1/30 * 50 mln taktow
-	 -- najpierw starsze potem mlodsze
 
     process(CLK)
     begin
@@ -51,7 +50,7 @@ begin
       end if;
     end process;
 
-    process(state, I2C_Busy)
+    process(state, I2C_Busy, I2C_FIFO_Empty, shouldProceed)
     begin
 			nextState <= state;
 
@@ -134,11 +133,18 @@ begin
 					if I2C_FIFO_Empty = '0' then
 						nextState <= SMeasureGetByte;
 					else
+						nextState <= SMeasureWait;
+					end if;
+					
+				-- WAIT BEFORE NEXT MEASUREMENT
+				when SMeasureWait =>
+					if shouldProceed = true then
 						nextState <= SPointToFirstDataRegister;
 					end if;
-																	
+
         end case;
 		end process;
+		
 		
 		-- increment currentByte
 		process(CLK)
@@ -156,6 +162,27 @@ begin
 				end if;
 			end if;
 		end process;
+		
+
+		-- wait after measurement for 1/30 * 50 mln clocks before next measurement
+		process(CLK, state)
+		begin
+			if rising_edge(CLK) then
+				if RST = '1' then
+					counter <= 0;
+				end if;
+				if state = SMeasureWait then
+						if counter < 1666667 then
+							shouldProceed <= false;
+							counter <= counter + 1;
+						else
+							shouldProceed <= true;
+							counter <= 0;
+						end if;
+				end if;
+			end if;
+		end process;
+
 
 		-- load data from FIFO
 		process(CLK, state)
@@ -191,6 +218,7 @@ begin
 			end if;
 		end process;
         
+		  
 		I2C_FIFO_DI <= X"00" when state = SPushAddressOfConfigRegA or state = SPushContinousMeasurementMode
 							else X"02" when state = SPushAddressOfModeReg
 							else "00010100" when state = SPushDataToConfigA -- tryb 30Hz: DO2=1, DO1=0 i DO0=1
@@ -214,6 +242,7 @@ begin
 
 		I2C_FIFO_POP <= '1' when state = SMeasurePopByte
 								else '0';
+		  
 		  
 		-- convert data to output
 		DRX <= data(47 downto 32);

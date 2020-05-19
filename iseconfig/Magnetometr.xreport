@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2020-05-18T12:21:08</DateModified>
+  <DateModified>2020-05-19T09:24:23</DateModified>
   <ModuleName>Magnetometr</ModuleName>
   <SummaryTimeStamp>Unknown</SummaryTimeStamp>
   <SavedFilePath>/home/szymwisn/git/hmc5883l/iseconfig/Magnetometr.xreport</SavedFilePath>
