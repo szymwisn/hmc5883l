@@ -17,7 +17,8 @@ entity HMC5883L_read is
 			I2C_FIFO_FULL: in STD_LOGIC;
 			DRX : out  STD_LOGIC_VECTOR (15 downto 0);
          DRY : out  STD_LOGIC_VECTOR (15 downto 0);
-         DRZ : out  STD_LOGIC_VECTOR (15 downto 0)
+         DRZ : out  STD_LOGIC_VECTOR (15 downto 0);
+			READ_Ready : out STD_LOGIC
     );
 			
 end HMC5883L_read;
@@ -29,7 +30,7 @@ architecture Behavioral of HMC5883L_read is
 							SPushAddressOfModeReg, SPushContinousMeasurementMode, SWriteMode, SWaitMode,
 							SMeasureReceive, SMeasureReceiveWait,
 							SMeasureGetByte, SMeasurePopByte, SMeasureIsFIFOEmpty,
-							SPointToFirstDataRegister, SWaitPointToFirstDataRegister, SMeasureWait);
+							SPointToFirstDataRegister, SWaitPointToFirstDataRegister, SMeasureWait, SReadReady);
    signal state, nextState: TState;
 	
 	signal data : STD_LOGIC_VECTOR (47 downto 0);
@@ -133,8 +134,11 @@ begin
 					if I2C_FIFO_Empty = '0' then
 						nextState <= SMeasureGetByte;
 					else
-						nextState <= SMeasureWait;
+						nextState <= SReadReady;
 					end if;
+					
+				when SReadReady =>
+						nextState <= SMeasureWait;
 					
 				-- WAIT BEFORE NEXT MEASUREMENT
 				when SMeasureWait =>
@@ -243,7 +247,10 @@ begin
 		I2C_FIFO_POP <= '1' when state = SMeasurePopByte
 								else '0';
 		  
-		  
+		READ_Ready <= '1' when state = SReadReady
+							else '0';
+		
+		
 		-- convert data to output
 		DRX <= data(47 downto 32);
 		DRY <= data(31 downto 16);
